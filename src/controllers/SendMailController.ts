@@ -6,6 +6,7 @@ import { UsersRepository } from "../repositories/UsersRepository";
 import { SurveysRepository } from "../repositories/SurveysRepository";
 import { SurveysUsersRepository } from "../repositories/SurveysUsersRepository";
 import SendMailService from "../services/SendMailService";
+import { AppError } from "../errors/AppError";
 
 class SendMailController {
   async execute(request: Request, response: Response) {
@@ -18,17 +19,13 @@ class SendMailController {
     const user = await usersRepository.findOne({ email });
 
     if (!user) {
-      return response.status(400).json({
-        error: "User not found",
-      });
+      throw new AppError("User not found");
     }
 
     const survey = await surveysRepository.findOne({ id: survey_id });
 
     if (!survey) {
-      return response.status(400).json({
-        error: "Survey not found",
-      });
+      throw new AppError("Survey not found");
     }
 
     const npsPath = resolve(__dirname, "..", "views", "emails", "npsMail.hbs");
